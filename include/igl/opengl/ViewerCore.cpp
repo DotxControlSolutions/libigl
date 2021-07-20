@@ -108,7 +108,10 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   using namespace Eigen;
 
   if (depth_test)
-    glEnable(GL_DEPTH_TEST);
+  {
+      glEnable(GL_DEPTH_TEST);
+      glDepthFunc(GL_LESS);
+  }
   else
     glDisable(GL_DEPTH_TEST);
 
