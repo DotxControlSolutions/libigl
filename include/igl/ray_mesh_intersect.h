@@ -13,8 +13,7 @@
 #include <vector>
 namespace igl
 {
-  // Shoot a ray against a mesh (V,F) and collect all hits. If you have many
-  // rays, consider using AABB.h
+  // Shoot a ray against a mesh (V,F) and collect all hits.
   //
   // Inputs:
   //   source  3-vector origin of ray
@@ -25,7 +24,6 @@ namespace igl
   //    hits  **sorted** list of hits
   // Returns true if there were any hits (hits.size() > 0)
   //
-  // See also: AABB.h
   template <
     typename Derivedsource,
     typename Deriveddir,

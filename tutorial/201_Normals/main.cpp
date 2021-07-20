@@ -1,4 +1,4 @@
-#include <igl/read_triangle_mesh.h>
+#include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_face_normals.h>
@@ -36,8 +36,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::read_triangle_mesh(
-    argc>1?argv[1]: TUTORIAL_SHARED_PATH "/fandisk.off",V,F);
+  igl::readOFF(TUTORIAL_SHARED_PATH "/fandisk.off", V, F);
 
   // Compute per-face normals
   igl::per_face_normals(V,F,N_faces);

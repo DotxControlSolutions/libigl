@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include <igl/matlab/matlabinterface.h>
+#include <iostream>
 
 // Implementation
 
@@ -103,11 +104,12 @@ IGL_INLINE void igl::matlab::mlgetmatrix(Engine** mlengine, std::string name, Ei
 
   unsigned long m = 0;
   unsigned long n = 0;
-  std::vector<double> t;
+  //std::vector<double> t;
 
   mxArray *ary = engGetVariable(*mlengine, name.c_str());
   if (ary == NULL)
   {
+    //std::cout << "ary empty" << std::endl;
     m = 0;
     n = 0;
     M = Eigen::MatrixXd(0,0);
@@ -125,7 +127,8 @@ IGL_INLINE void igl::matlab::mlgetmatrix(Engine** mlengine, std::string name, Ei
       for(int i=0; i<M.rows();++i)
         M(i,j) = pM[c++];
   }
-
+  //std::cout << "m_size: " << m << std::endl;
+  //std::cout << "n_size: " << n << std::endl;
   mxDestroyArray(ary);
 }
 

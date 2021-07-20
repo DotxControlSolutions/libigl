@@ -1,10 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-//
+// 
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// Copyright (C) 2020 Jérémie Dumas <jeremie.dumas@ens-lyon.org>
-//
-// This Source Code Form is subject to the terms of the Mozilla Public License
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_READSTL_H
 #define IGL_READSTL_H
@@ -14,11 +13,10 @@
 #  include <Eigen/Core>
 #endif
 #include <string>
-#include <istream>
+#include <cstdio>
 #include <vector>
-#include <array>
 
-namespace igl
+namespace igl 
 {
   // Read a mesh from an ascii/binary stl file.
   //
@@ -40,24 +38,26 @@ namespace igl
   //   writeOBJ("Downloads/cat.obj",V,F);
   template <typename DerivedV, typename DerivedF, typename DerivedN>
   IGL_INLINE bool readSTL(
-    std::istream &input,
+    const std::string & filename,
     Eigen::PlainObjectBase<DerivedV> & V,
     Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedN> & N);
-
+  // Inputs:
+  //   stl_file  pointer to already opened .stl file 
+  // Outputs:
+  //   stl_file  closed file
   template <typename TypeV, typename TypeF, typename TypeN>
   IGL_INLINE bool readSTL(
-    std::istream &input,
-    std::vector<std::array<TypeV, 3> > & V,
-    std::vector<std::array<TypeF, 3> > & F,
-    std::vector<std::array<TypeN, 3> > & N);
-
-  template <typename DerivedV, typename DerivedF, typename DerivedN>
+    FILE * stl_file, 
+    std::vector<std::vector<TypeV> > & V,
+    std::vector<std::vector<TypeF> > & F,
+    std::vector<std::vector<TypeN> > & N);
+  template <typename TypeV, typename TypeF, typename TypeN>
   IGL_INLINE bool readSTL(
-    FILE * fp,
-    Eigen::PlainObjectBase<DerivedV> & V,
-    Eigen::PlainObjectBase<DerivedF> & F,
-    Eigen::PlainObjectBase<DerivedN> & N);
+    const std::string & filename,
+    std::vector<std::vector<TypeV> > & V,
+    std::vector<std::vector<TypeF> > & F,
+    std::vector<std::vector<TypeN> > & N);
 }
 
 #ifndef IGL_STATIC_LIBRARY

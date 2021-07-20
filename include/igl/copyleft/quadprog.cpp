@@ -1,8 +1,5 @@
 #include "quadprog.h"
-#include "../matlab_format.h"
 #include <vector>
-#include <iostream>
-#include <cstdio>
 /*
  FILE eiquadprog.hh
  
@@ -95,22 +92,6 @@ IGL_INLINE bool igl::copyleft::quadprog(
 {
   using namespace Eigen;
   typedef double Scalar;
-
-
-  const auto print_ivector= [](const char* name, const Eigen::MatrixXi & A, int n)
-  {
-    std::cout<<igl::matlab_format(A,name)<<std::endl;
-  };
-  const auto print_matrix = [](const char* name, const Eigen::MatrixXd & A, int n)
-  {
-    std::cout<<igl::matlab_format(A,name)<<std::endl;
-  };
-
-  const auto print_vector = [](const char* name, const Eigen::VectorXd & v, int n)
-  {
-    std::cout<<igl::matlab_format(v,name)<<std::endl;
-  };
-
   const auto distance = [](Scalar a, Scalar b)->Scalar
   {
   	Scalar a1, b1, t;
@@ -158,7 +139,7 @@ IGL_INLINE bool igl::copyleft::quadprog(
 #ifdef TRACE_SOLVER
     std::cerr << "Add constraint " << iq << '/';
 #endif
-    int j, k;
+    int i, j, k;
     double cc, ss, h, t1, t2, xny;
     
     /* we have to find the Givens rotation which will reduce the element
@@ -303,7 +284,7 @@ IGL_INLINE bool igl::copyleft::quadprog(
     }
   };
 
-  int i, k, l; /* indices */
+  int i, j, k, l; /* indices */
   int ip, me, mi;
   int n=g0.size();  int p=ce0.size();  int m=ci0.size();  
   MatrixXd R(G.rows(),G.cols()), J(G.rows(),G.cols());

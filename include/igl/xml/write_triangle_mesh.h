@@ -8,7 +8,6 @@
 #ifndef IGL_XML_WRITE_TRIANGLE_MESH_H
 #define IGL_XML_WRITE_TRIANGLE_MESH_H
 #include "../igl_inline.h"
-#include "../FileEncoding.h"
 
 #include <Eigen/Core>
 #include <string>
@@ -34,7 +33,7 @@ namespace igl
       const std::string str,
       const Eigen::PlainObjectBase<DerivedV>& V,
       const Eigen::PlainObjectBase<DerivedF>& F,
-      const FileEncoding fe = FileEncoding::Ascii);
+      const bool ascii = true);
   }
 }
 
