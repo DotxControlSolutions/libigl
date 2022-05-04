@@ -20,6 +20,8 @@ IGL_INLINE void igl::read_file_binary(
     size_t sizeBytes = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     fileBufferBytes.resize(sizeBytes);
+    //size_t results;
+    //results = fread((char*)fileBufferBytes.data(), 1, sizeBytes, fp);
     if(fread((char*)fileBufferBytes.data(), 1, sizeBytes, fp) == sizeBytes) 
     {
       fclose(fp);

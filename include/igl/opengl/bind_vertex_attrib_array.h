@@ -24,6 +24,22 @@ namespace igl
       GLuint bufferID, 
       const Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> &M, 
       bool refresh);
+
+    IGL_INLINE GLint bind_vertex_attrib_array_print_init(
+        const GLuint program_shader,
+        const std::string& name,
+        GLuint bufferID,
+        const Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& M,
+        bool refresh,
+        const GLuint n_rows);
+
+    IGL_INLINE GLint bind_vertex_attrib_array_print(
+        const GLuint program_shader,
+        const std::string& name,
+        GLuint bufferID,
+        const Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& M,
+        bool refresh,
+        GLuint step);
   }
 }
 #ifndef IGL_STATIC_LIBRARY

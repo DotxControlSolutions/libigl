@@ -222,6 +222,17 @@ public:
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_B;
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_A;
 
+  // Rotation matrix
+  Eigen::Matrix4f rotation_matrix = Eigen::Matrix4f::Identity(); //added by JK & PvK
+
+  // data in mesh that I want to be added to the mesh
+  bool print_data = false;
+  bool is_init = false;
+  unsigned int step;
+  bool only_bind = false;
+  Eigen::MatrixXf V_add; 
+  Eigen::MatrixXi F_add;
+
   // Overlays
 
   // Lines plotted over the scene
@@ -266,6 +277,7 @@ public:
   unsigned int use_matcap;
   unsigned int show_faces;
   unsigned int show_lines;
+  unsigned int model_matrix;
   unsigned int show_vertex_labels;
   unsigned int show_face_labels;
   unsigned int show_custom_labels;
