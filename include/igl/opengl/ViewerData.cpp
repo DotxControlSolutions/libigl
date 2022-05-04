@@ -82,9 +82,10 @@ IGL_INLINE void igl::opengl::ViewerData::set_mesh(
       Eigen::Vector3d(GOLD_AMBIENT[0], GOLD_AMBIENT[1], GOLD_AMBIENT[2]),
       Eigen::Vector3d(GOLD_DIFFUSE[0], GOLD_DIFFUSE[1], GOLD_DIFFUSE[2]),
       Eigen::Vector3d(GOLD_SPECULAR[0], GOLD_SPECULAR[1], GOLD_SPECULAR[2]));
-
+    
     // Generates a checkerboard texture
     grid_texture();
+   
   }
   else
   {
@@ -653,16 +654,20 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
   igl::opengl::MeshGL& meshgl
   )
 {
+    
   if (!meshgl.is_initialized)
   {
     meshgl.init();
   }
-
+ 
   bool per_corner_uv = (data.F_uv.rows() == data.F.rows());
   bool per_corner_normals = (data.F_normals.rows() == 3 * data.F.rows());
 
-  meshgl.dirty |= data.dirty;
+  //std::cout << "per_corner_uv = " << per_corner_uv << std::endl;
+  //std::cout << "per_corner_normals = " << per_corner_normals << std::endl;
 
+  meshgl.dirty |= data.dirty;
+  //std::cout << "line 654" << std::endl;
   // Input:
   //   X  #F by dim quantity
   // Output:
@@ -691,7 +696,8 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       for (unsigned j=0;j<3;++j)
         X_vbo.row(i*3+j) = X.row(data.F(i,j)).cast<float>();
   };
-
+  //std::cout << "line 684: " << meshgl.V_vbo << "dim: " << meshgl.V_vbo.rows() << ", " << meshgl.V_vbo.cols() << std::endl;
+  //std::cout << "line 685: " << data.V << "dim: " << data.V.rows() << ", " << data.V.cols() << std::endl;
   if (!data.face_based)
   {
     if (!(per_corner_uv || per_corner_normals))
@@ -699,6 +705,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       // Vertex positions
       if (meshgl.dirty & MeshGL::DIRTY_POSITION)
         meshgl.V_vbo = data.V.cast<float>();
+      
 
       // Vertex normals
       if (meshgl.dirty & MeshGL::DIRTY_NORMAL)
@@ -728,7 +735,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
     }
     else
     {
-
+        //std::cout << "line 725" << std::endl;
       // Per vertex properties with per corner UVs
       if (meshgl.dirty & MeshGL::DIRTY_POSITION)
       {
@@ -779,9 +786,12 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
     }
   } else
   {
+      //std::cout << "line 776" << std::endl;
     if (meshgl.dirty & MeshGL::DIRTY_POSITION)
     {
+        //std::cout << "line 779" << std::endl;
       per_corner(data.V,meshgl.V_vbo);
+      //std::cout << "line 781" << std::endl;
     }
     if (meshgl.dirty & MeshGL::DIRTY_AMBIENT)
     {
@@ -809,14 +819,14 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       if (invert_normals)
         meshgl.V_normals_vbo = -meshgl.V_normals_vbo;
     }
-
+    //std::cout << "Line 798" << std::endl;
     if (meshgl.dirty & MeshGL::DIRTY_FACE)
     {
       meshgl.F_vbo.resize(data.F.rows(),3);
       for (unsigned i=0; i<data.F.rows();++i)
         meshgl.F_vbo.row(i) << i*3+0, i*3+1, i*3+2;
     }
-
+    //std::cout << "Line 805" << std::endl;
     if( (meshgl.dirty & MeshGL::DIRTY_UV) && data.V_uv.rows()>0)
     {
         meshgl.V_uv_vbo.resize(data.F.rows()*3,2);
@@ -825,7 +835,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
             meshgl.V_uv_vbo.row(i*3+j) = data.V_uv.row(per_corner_uv ? data.F_uv(i,j) : data.F(i,j)).cast<float>();
     }
   }
-
+  //std::cout << "Line 814" << std::endl;
   if (meshgl.dirty & MeshGL::DIRTY_TEXTURE)
   {
     meshgl.tex_u = data.texture_R.rows();
@@ -839,7 +849,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.tex(i*4+3) = data.texture_A(i);
     }
   }
-
+  //std::cout << "Line 828" << std::endl;
   if (meshgl.dirty & MeshGL::DIRTY_OVERLAY_LINES)
   {
     meshgl.lines_V_vbo.resize(data.lines.rows()*2,3);
@@ -855,7 +865,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.lines_F_vbo(2*i+1) = 2*i+1;
     }
   }
-
+  //std::cout << "Line 844" << std::endl;
   if (meshgl.dirty & MeshGL::DIRTY_OVERLAY_POINTS)
   {
     meshgl.points_V_vbo.resize(data.points.rows(),3);
@@ -868,22 +878,32 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.points_F_vbo(i) = i;
     }
   }
-
+  //std::cout << "Line 857" << std::endl;
   if (meshgl.dirty & MeshGL::DIRTY_FACE_LABELS)
   {
     if(face_labels_positions.rows()==0)
     {
       face_labels_positions.conservativeResize(F.rows(), 3);
+      //std::cout << "line 864: F_normals = " << F_normals << std::endl;
       Eigen::MatrixXd faceNormals = F_normals.normalized();
+      //std::cout << "line 864: faceNormals = " << faceNormals << std::endl;
       for (int f=0; f<F.rows();++f)
       {
+        //std::cout << "line 866: index = " << f << std::endl;
         std::string faceName = std::to_string(f);
+        //std::cout << "Line 868" << std::endl;
         face_labels_positions.row(f) = V.row(F.row(f)(0));
+        //std::cout << "Line 870" << std::endl;
         face_labels_positions.row(f) += V.row(F.row(f)(1));
+       // std::cout << "Line 872" << std::endl;
         face_labels_positions.row(f) += V.row(F.row(f)(2));
+        //std::cout << "Line 874" << std::endl;
         face_labels_positions.row(f) /= 3.;
+        //std::cout << "Line 876" << std::endl;
         face_labels_positions.row(f) = (faceNormals*0.05).row(f) + face_labels_positions.row(f);
+        //std::cout << "Line 878" << std::endl;
         face_labels_strings.push_back(faceName);
+        //std::cout << "Line 880" << std::endl;
       }
     }
     update_labels(
@@ -892,7 +912,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       face_labels_strings
     );
   }
-
+  //std::cout << "Line 882" << std::endl;
   if (meshgl.dirty & MeshGL::DIRTY_VERTEX_LABELS)
   {
     if(vertex_labels_positions.rows()==0)

@@ -24,6 +24,24 @@ namespace igl
       GLuint bufferID, 
       const Eigen::Matrix<Scalar,RowsAtCompileTime,ColsAtCompileTime,Eigen::RowMajor> &M,
       const bool refresh);
+
+    // Custom: bind print mesh data to GPU with initial allocation
+    IGL_INLINE GLint bind_vertex_attrib_array_print_init(
+        const GLuint program_shader,
+        const std::string& name,
+        GLuint bufferID,
+        const Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& M,
+        bool refresh,
+        const GLuint n_rows);
+
+    // Custom: bind print mesh data to GPU for incremental updates
+    IGL_INLINE GLint bind_vertex_attrib_array_print(
+        const GLuint program_shader,
+        const std::string& name,
+        GLuint bufferID,
+        const Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>& M,
+        bool refresh,
+        GLuint step);
   }
 }
 #ifndef IGL_STATIC_LIBRARY

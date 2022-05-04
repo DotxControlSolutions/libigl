@@ -106,6 +106,65 @@ IGL_INLINE void igl::opengl::MeshGL::TextGL::free_buffers()
   glDeleteBuffers(1, &vbo_labels_indices);
 }
 
+IGL_INLINE void igl::opengl::MeshGL::bind_print_mesh(bool is_init, unsigned int step)
+{
+    glBindVertexArray(vao_mesh);
+    glUseProgram(shader_mesh);
+    if (is_init == true) {
+        //std::cout << "line 114" << std::endl;
+        // initialize buffer for all print data        
+        bind_vertex_attrib_array_print_init(shader_mesh, "position", vbo_V, V_vbo, dirty & MeshGL::DIRTY_POSITION, 29070);
+        bind_vertex_attrib_array_print_init(shader_mesh, "normal", vbo_V_normals, V_normals_vbo, dirty & MeshGL::DIRTY_NORMAL, 29070);
+        bind_vertex_attrib_array_print_init(shader_mesh, "Ka", vbo_V_ambient, V_ambient_vbo, dirty & MeshGL::DIRTY_AMBIENT, 29070);
+        bind_vertex_attrib_array_print_init(shader_mesh, "Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & MeshGL::DIRTY_DIFFUSE, 29070);
+        bind_vertex_attrib_array_print_init(shader_mesh, "Ks", vbo_V_specular, V_specular_vbo, dirty & MeshGL::DIRTY_SPECULAR, 29070);
+        bind_vertex_attrib_array_print_init(shader_mesh, "texcoord", vbo_V_uv, V_uv_vbo, dirty & MeshGL::DIRTY_UV, 29070);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_F);
+        if (dirty & MeshGL::DIRTY_FACE) {
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * F_vbo.size()* 29070, nullptr, GL_DYNAMIC_DRAW);
+            glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned) * F_vbo.size(), F_vbo.data());
+        }
+    }
+    else {
+        //std::cout << "line 129: dirty = " << dirty << std::endl;
+        // extend buffer for print data per step
+        //std::cout << V_vbo << std::endl;
+        bind_vertex_attrib_array_print(shader_mesh, "position", vbo_V, V_vbo, dirty & MeshGL::DIRTY_POSITION, step);
+        bind_vertex_attrib_array_print(shader_mesh, "normal", vbo_V_normals, V_normals_vbo, dirty & MeshGL::DIRTY_NORMAL, step);
+        bind_vertex_attrib_array_print(shader_mesh, "Ka", vbo_V_ambient, V_ambient_vbo, dirty & MeshGL::DIRTY_AMBIENT, step);
+        bind_vertex_attrib_array_print(shader_mesh, "Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & MeshGL::DIRTY_DIFFUSE, step);
+        bind_vertex_attrib_array_print(shader_mesh, "Ks", vbo_V_specular, V_specular_vbo, dirty & MeshGL::DIRTY_SPECULAR, step);
+        bind_vertex_attrib_array_print(shader_mesh, "texcoord", vbo_V_uv, V_uv_vbo, dirty & MeshGL::DIRTY_UV, step);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_F);
+        if (dirty & MeshGL::DIRTY_FACE) {
+            for (int i = 0; i < F_vbo.rows(); i++)
+                for (int j = 0; j < F_vbo.cols(); j++)
+                    F_vbo(i, j) = F_vbo(i, j) + F_vbo.size()*(step-6);
+            //std::cout << "meshgl: line 143: step = " << step << std::endl;
+            glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, (sizeof(unsigned) * F_vbo.size()*(step-6)), sizeof(unsigned) * F_vbo.size(), F_vbo.data());
+            //std::cout << "de data van faces staat nu in de videokaart" << std::endl;
+            /*Eigen::Matrix<unsigned int, 480, 3> data;
+            glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned) * F_vbo.size() * (step-5), &data);
+            std::cout << data << std::endl;*/
+        }
+    }
+    std::cout << "the data is placed in the buffers" << std::endl;
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, vbo_tex);
+    if (dirty & MeshGL::DIRTY_TEXTURE)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tex_wrap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tex_wrap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tex_filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex_filter);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_u, tex_v, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.data());
+    }
+    glUniform1i(glGetUniformLocation(shader_mesh, "tex"), 0);
+    //dirty &= ~MeshGL::DIRTY_MESH;
+    dirty = MeshGL::DIRTY_NONE;
+}
+
 IGL_INLINE void igl::opengl::MeshGL::bind_mesh()
 {
   glBindVertexArray(vao_mesh);
@@ -119,7 +178,7 @@ IGL_INLINE void igl::opengl::MeshGL::bind_mesh()
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_F);
   if (dirty & MeshGL::DIRTY_FACE)
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*F_vbo.size(), F_vbo.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*F_vbo.size(), F_vbo.data(), GL_DYNAMIC_COPY);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, vbo_tex);
@@ -134,6 +193,7 @@ IGL_INLINE void igl::opengl::MeshGL::bind_mesh()
   }
   glUniform1i(glGetUniformLocation(shader_mesh,"tex"), 0);
   dirty &= ~MeshGL::DIRTY_MESH;
+  //std::cout << "the mesh is bound" << std::endl;
 }
 
 IGL_INLINE void igl::opengl::MeshGL::bind_overlay_lines()
@@ -219,8 +279,22 @@ IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0, 1.0);
   }
-  glDrawElements(GL_TRIANGLES, 3*F_vbo.rows(), GL_UNSIGNED_INT, 0);
-
+  // TODO: adjust this to adjust for random paths
+  //std::cout << "is this print? " << is_print << std::endl;
+  if (is_print == true) {
+      if (step <= first_printing_step) {
+          glDrawElements(GL_TRIANGLES, 0, GL_UNSIGNED_INT, 0);
+      }
+      else {
+          glDrawElements(GL_TRIANGLES, 3 * n_element_in_one_F * (step - first_printing_step), GL_UNSIGNED_INT, 0);
+      }
+      
+      //std::cout << "Line 281: # of rows to draw = " << 3 * n_element_in_one_F * (step - 3) << std::endl;
+  }
+  else {
+      glDrawElements(GL_TRIANGLES, 3 * F_vbo.rows(), GL_UNSIGNED_INT, 0);
+      //std::cout << "Line 290: # of rows to draw = " << 3 * F_vbo.rows() << std::endl;
+  }
   glDisable(GL_POLYGON_OFFSET_FILL);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
@@ -249,9 +323,10 @@ IGL_INLINE void igl::opengl::MeshGL::init()
   is_initialized = true;
   std::string mesh_vertex_shader_string =
 R"(#version 150
+  uniform mat4 model;
   uniform mat4 view;
   uniform mat4 proj;
-  uniform mat4 normal_matrix;
+  
   in vec3 position;
   in vec3 normal;
   out vec3 position_eye;
@@ -272,26 +347,28 @@ R"(#version 150
 
   void main()
   {
-    position_eye = vec3 (view * vec4 (position, 1.0));
+    // Custom: include model matrix in transformations
+    position_eye = vec3 (view * model * vec4 (position, 1.0));
     if(!shadow_pass)
     {
       if(is_shadow_mapping)
       {
-        position_shadow = shadow_proj * shadow_view * vec4(position, 1.0);
+        position_shadow = shadow_proj * shadow_view * model * vec4(position, 1.0);
       }
-      normal_eye = vec3 (normal_matrix * vec4 (normal, 0.0));
+      // Custom: use view * model instead of normal_matrix
+      normal_eye = vec3 (view * model * vec4 (normal, 0.0));
       normal_eye = normalize(normal_eye);
       Kai = Ka;
       Kdi = Kd;
       Ksi = Ks;
       texcoordi = texcoord;
     }
-    gl_Position = proj * vec4 (position_eye, 1.0); //proj * view * vec4(position, 1.0);
+    gl_Position = proj * vec4 (position_eye, 1.0);
   }
-)";
-
+)"; 
   std::string mesh_fragment_shader_string =
 R"(#version 150
+  uniform mat4 model;
   uniform mat4 view;
   uniform mat4 proj;
   uniform vec4 fixed_color;
@@ -300,7 +377,8 @@ R"(#version 150
   uniform bool is_directional_light;
   uniform bool is_shadow_mapping;
   uniform bool shadow_pass;
-  uniform vec3 light_position_eye;
+  // Custom: use world-space light position for 2-point lighting
+  uniform vec3 light_position_world;
   vec3 Ls = vec3 (1, 1, 1);
   vec3 Ld = vec3 (1, 1, 1);
   vec3 La = vec3 (1, 1, 1);
@@ -327,6 +405,8 @@ R"(#version 150
       outColor = vec4(0.56,0.85,0.77,1.);
       return;
     }
+    // Custom: compute light position in eye space from world space
+    vec3 light_position_eye = vec3 (view * vec4 (light_position_world, 1.0));
     // If is_directional_light then assume normalized
     vec3 direction_to_light_eye = light_position_eye;
     if(! is_directional_light)
@@ -372,7 +452,7 @@ R"(#version 150
       float clamped_dot_prod = abs(max (dot_prod, -double_sided));
       vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;    // Diffuse intensity
 
-      vec3 reflection_eye = reflect (-direction_to_light_eye, normalize(normal_eye));
+      vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye);
       vec3 surface_to_viewer_eye = normalize (-position_eye);
       float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
       dot_prod_specular = float(abs(dot_prod)==dot_prod) * abs(max (dot_prod_specular, -double_sided));
@@ -384,9 +464,9 @@ R"(#version 150
     }
   }
 )";
-
   std::string overlay_vertex_shader_string =
 R"(#version 150
+  uniform mat4 model;
   uniform mat4 view;
   uniform mat4 proj;
   in vec3 position;
@@ -395,11 +475,10 @@ R"(#version 150
 
   void main()
   {
-    gl_Position = proj * view * vec4 (position, 1.0);
+    gl_Position = proj * view * model * vec4 (position, 1.0);
     color_frag = color;
   }
 )";
-
   std::string overlay_fragment_shader_string =
 R"(#version 150
   in vec3 color_frag;
@@ -409,7 +488,6 @@ R"(#version 150
     outColor = vec4(color_frag, 1.0);
   }
 )";
-
   std::string overlay_point_fragment_shader_string =
 R"(#version 150
   in vec3 color_frag;
@@ -421,7 +499,6 @@ R"(#version 150
     outColor = vec4(color_frag, 1.0);
   }
 )";
-
   std::string text_vert_shader =
 R"(#version 330
     in vec3 position;
@@ -438,7 +515,6 @@ R"(#version 330
       gl_Position = proj * view * vec4(position, 1.0);
     }
 )";
-
   std::string text_geom_shader =
 R"(#version 150 core
     layout(points) in;
@@ -479,7 +555,6 @@ R"(#version 150 core
       EndPrimitive();
     }
 )";
-
   std::string text_frag_shader =
 R"(#version 330
     out vec4 outColor;
@@ -492,7 +567,6 @@ R"(#version 330
       outColor = vec4(TextColor, A);
     }
 )";
-
   init_buffers();
   init_text_rendering();
   create_shader_program(

@@ -262,6 +262,17 @@ public:
   /// Texture alpha values
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_A;
 
+  // Rotation matrix
+  Eigen::Matrix4f rotation_matrix = Eigen::Matrix4f::Identity(); //added by JK & PvK
+
+  // data in mesh that I want to be added to the mesh
+  bool print_data = false;
+  bool is_init = false;
+  unsigned int step;
+  bool only_bind = false;
+  Eigen::MatrixXf V_add; 
+  Eigen::MatrixXi F_add;
+
   // Overlays
 
   /// Lines plotted over the scene
@@ -315,6 +326,8 @@ public:
   unsigned int show_texture;
   unsigned int show_vertex_labels;
   unsigned int use_matcap;
+  // Custom: enable model matrix transformation
+  unsigned int model_matrix;
 
   /// Point size / line width
   float point_size;

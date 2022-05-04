@@ -183,6 +183,14 @@ public:
   /// View rotation as quaternion
   Eigen::Quaternionf trackball_angle;
 
+  // Custom: Model viewing parameters
+  float model_zoom;
+  Eigen::Vector3f model_translation;
+
+  // Custom: Model viewing parameters (uv coordinates)
+  float model_zoom_uv;
+  Eigen::Vector3f model_translation_uv;
+
   /// Base zoom of camera
   float camera_base_zoom;
   /// Current zoom of camera
@@ -222,6 +230,8 @@ public:
 
   /// OpenGL view transformation matrix on last render pass
   Eigen::Matrix4f view;
+  /// Custom: OpenGL model transformation matrix on last render pass
+  Eigen::Matrix4f model;
   /// OpenGL proj transformation matrix on last render pass
   Eigen::Matrix4f proj;
   /// OpenGL norm transformation matrix on last render pass
@@ -252,6 +262,12 @@ namespace igl {
       SERIALIZE_MEMBER(trackball_angle);
       SERIALIZE_MEMBER(rotation_type);
 
+      //SERIALIZE_MEMBER(model_zoom);
+      //SERIALIZE_MEMBER(model_translation);
+
+      //SERIALIZE_MEMBER(model_zoom_uv);
+      //SERIALIZE_MEMBER(model_translation_uv);
+
       SERIALIZE_MEMBER(camera_base_zoom);
       SERIALIZE_MEMBER(camera_zoom);
       SERIALIZE_MEMBER(orthographic);
@@ -272,8 +288,9 @@ namespace igl {
 
       SERIALIZE_MEMBER(viewport);
       SERIALIZE_MEMBER(view);
+      //SERIALIZE_MEMBER(model);
       SERIALIZE_MEMBER(proj);
-      SERIALIZE_MEMBER(norm);
+      //SERIALIZE_MEMBER(norm);
     }
 
     template<>

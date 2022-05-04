@@ -135,6 +135,13 @@ public:
   /// Marks dirty buffers that need to be uploaded to OpenGL
   std::uint32_t dirty;
 
+  // marks print data
+  bool is_print = false;
+  unsigned int step;
+  unsigned int n_element_in_one_F;
+  unsigned int first_printing_step;
+
+
   IGL_INLINE MeshGL();
 
   /// Initialize shaders and buffers
@@ -145,6 +152,9 @@ public:
 
   /// Create a new set of OpenGL buffer objects
   IGL_INLINE void init_buffers();
+
+  /// Custom: Bind mesh for print data (buffer once, add data incrementally)
+  IGL_INLINE void bind_print_mesh(bool is_init, unsigned int step);
 
   /// Bind the underlying OpenGL buffer objects for subsequent mesh draw calls
   IGL_INLINE void bind_mesh();
