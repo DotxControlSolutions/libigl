@@ -280,13 +280,13 @@ IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
     glPolygonOffset(1.0, 1.0);
   }
   // TODO: adjust this to adjust for random paths
-  //std::cout << "is this print? " << is_print << std::endl;
-  if (is_print == true) {
+  if (is_simulation == true) { // this was is_print before
       if (step <= first_printing_step) {
           glDrawElements(GL_TRIANGLES, 0, GL_UNSIGNED_INT, 0);
       }
       else {
-          glDrawElements(GL_TRIANGLES, 3 * n_element_in_one_F * (step - first_printing_step), GL_UNSIGNED_INT, 0);
+          // if statement to catch when interpolation is needed.
+          glDrawElements(GL_TRIANGLES, 3 * n_element_in_one_F * (step - first_printing_step) - 3 * dev_in_F, GL_UNSIGNED_INT, 0);
       }
       
       //std::cout << "Line 281: # of rows to draw = " << 3 * n_element_in_one_F * (step - 3) << std::endl;

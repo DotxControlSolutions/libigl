@@ -486,8 +486,9 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   background_color << 0.93f, 0.95f, 0.97f, 1.0f;
 
   // Default lights settings
-  light_position << 0.0f, 0.3f, 0.0f;
-  lighting_factor = 0.1f; //on
+  light_position << 10.0f, 10.0f, 100.0f;
+  light_position_2 << -10.0f, -10.0f, 100.0f;
+  lighting_factor = 0.8f; //on
 
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
@@ -504,7 +505,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   camera_zoom = 1.0f;
   orthographic = false;
   camera_view_angle = 45.0;
-  camera_dnear = 0.1;
+  camera_dnear = 1.0;
   camera_dfar = 100.0;
   camera_base_translation << 0, 0, 0;
   camera_translation << 0, 0, 0;

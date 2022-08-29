@@ -138,6 +138,7 @@ public:
 
   // Lighting
   Eigen::Vector3f light_position;
+  Eigen::Vector3f light_position_2;
   float lighting_factor;
 
   RotationType rotation_type;
@@ -198,6 +199,7 @@ namespace igl {
       SERIALIZE_MEMBER(background_color);
 
       SERIALIZE_MEMBER(light_position);
+      SERIALIZE_MEMBER(light_position_2);
       SERIALIZE_MEMBER(lighting_factor);
 
       SERIALIZE_MEMBER(trackball_angle);
