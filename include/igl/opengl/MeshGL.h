@@ -137,9 +137,11 @@ public:
 
   // marks print data
   bool is_print = false;
-  unsigned int step;
+  bool is_simulation = false;
+  unsigned int step = 0;
   unsigned int n_element_in_one_F;
   unsigned int first_printing_step;
+  int dev_in_F = 0;
 
 
   IGL_INLINE MeshGL();

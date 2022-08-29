@@ -161,6 +161,8 @@ public:
 
   /// Light position (or direction to light)
   Eigen::Vector3f light_position;
+  /// Custom: second light position for 2-point lighting system
+  Eigen::Vector3f light_position_2;
   /// Whether to treat `light_position` as a point or direction
   bool is_directional_light;
   /// Whether shadow mapping is on
@@ -257,6 +259,7 @@ namespace igl {
       SERIALIZE_MEMBER(background_color);
 
       SERIALIZE_MEMBER(light_position);
+      SERIALIZE_MEMBER(light_position_2);
       SERIALIZE_MEMBER(lighting_factor);
 
       SERIALIZE_MEMBER(trackball_angle);
