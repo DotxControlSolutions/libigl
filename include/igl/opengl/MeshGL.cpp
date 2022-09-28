@@ -326,7 +326,6 @@ R"(#version 150
   uniform mat4 model;
   uniform mat4 view;
   uniform mat4 proj;
-  uniform mat4 normal_matrix;
   in vec3 position;
   in vec3 normal;
   out vec3 position_eye;
@@ -379,8 +378,6 @@ R"(#version 150
   // Custom: 4 light positions for multi-point lighting
   uniform vec3 light_position_world;
   uniform vec3 light_position_world2;
-  uniform vec3 light_position_world3;
-  uniform vec3 light_position_world4;
   vec3 Ls = vec3 (1, 1, 1);
   vec3 Ld = vec3 (1, 1, 1);
   vec3 La = vec3 (1, 1, 1);
@@ -408,7 +405,7 @@ R"(#version 150
     }
     // Custom: 2-point lighting system
     // Light 1
-    vec3 Ia = La * vec3(Kai);    // ambient intensity
+    vec3 Ia = La * vec3(Kai);
     vec3 light_position_eye = vec3 (view * vec4 (light_position_world, 1.0));
     vec3 vector_to_light_eye = light_position_eye - position_eye;
     vec3 direction_to_light_eye = normalize (-vector_to_light_eye);
@@ -416,35 +413,34 @@ R"(#version 150
     float clamped_dot_prod = max (dot_prod, 0.0);
     vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;
 
-      vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye);
-      vec3 surface_to_viewer_eye = normalize (-position_eye);
-      float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
-      
-      dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);
-      float specular_factor = pow (dot_prod_specular, specular_exponent);
-      vec3 Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
-      vec4 color_1 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
+    vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye);
+    vec3 surface_to_viewer_eye = normalize (-position_eye);
+    float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
+    dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);
+    float specular_factor = pow (dot_prod_specular, specular_exponent);
+    vec3 Is = Ls * vec3(Ksi) * specular_factor;
+    vec4 color_1 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
 
-      // Light 2
-      Ia = La * vec3(Kai);
-      light_position_eye = vec3 (view * vec4 (light_position_world2, 1.0));
-      vector_to_light_eye = light_position_eye - position_eye;
-      direction_to_light_eye = normalize (-vector_to_light_eye);
-      dot_prod = dot (direction_to_light_eye, normal_eye);
-      clamped_dot_prod = max (dot_prod, 0.0);
-      Id = Ld * vec3(Kdi) * clamped_dot_prod;
+    // Light 2
+    Ia = La * vec3(Kai);
+    light_position_eye = vec3 (view * vec4 (light_position_world2, 1.0));
+    vector_to_light_eye = light_position_eye - position_eye;
+    direction_to_light_eye = normalize (-vector_to_light_eye);
+    dot_prod = dot (direction_to_light_eye, normal_eye);
+    clamped_dot_prod = max (dot_prod, 0.0);
+    Id = Ld * vec3(Kdi) * clamped_dot_prod;
 
-      reflection_eye = reflect (-direction_to_light_eye, normal_eye);
-      surface_to_viewer_eye = normalize (-position_eye);
-      dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
-      dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);
-      specular_factor = pow (dot_prod_specular, specular_exponent);
-      Is = Ls * vec3(Ksi) * specular_factor;
-      vec4 color_2 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
+    reflection_eye = reflect (-direction_to_light_eye, normal_eye);
+    surface_to_viewer_eye = normalize (-position_eye);
+    dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
+    dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);
+    specular_factor = pow (dot_prod_specular, specular_exponent);
+    Is = Ls * vec3(Ksi) * specular_factor;
+    vec4 color_2 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
 
-      // Combine lights
-      outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (color_1 + color_2)/1.5;
-      if (fixed_color != vec4(0.0)) outColor = fixed_color;
+    // Combine lights
+    outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (color_1 + color_2)/1.5;
+    if (fixed_color != vec4(0.0)) outColor = fixed_color;
   }
 )";
   std::string overlay_vertex_shader_string =

@@ -204,8 +204,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
   GLint light_position_worldi = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world");
   GLint light_position_world2i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world2");
-  GLint light_position_world3i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world3");
-  GLint light_position_world4i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world4");
+  //GLint light_position_world3i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world3");
+  //GLint light_position_world4i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world4");
   //GLint light_position_eyei   = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_eye");
   GLint lighting_factori      = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
   GLint fixed_colori          = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
@@ -215,11 +215,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
   const bool eff_is_directional_light = is_directional_light || is_shadow_mapping;
   glUniform1f(specular_exponenti, data.shininess);
-  // Custom: send all 4 light positions in world space
+  // Custom: send 2 light positions in world space
   glUniform3fv(light_position_worldi, 1, light_position.data());
   glUniform3fv(light_position_world2i, 1, light_position_2.data());
-  glUniform3fv(light_position_world3i, 1, light_position_3.data());
-  glUniform3fv(light_position_world4i, 1, light_position_4.data());
   if(is_shadow_mapping)
   {
     glUniformMatrix4fv(glGetUniformLocation(data.meshgl.shader_mesh,"shadow_view"), 1, GL_FALSE, shadow_view.data());
@@ -575,8 +573,6 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   // Custom: multi-point lighting system positions
   light_position << 1000.0f, 1000.0f, 1000.0f;
   light_position_2 << -1000.0f, 1000.0f, -1000.0f;
-  light_position_3 << 0.0f, 1000.0f, 1000.0f; // unused
-  light_position_4 << 0.0f, -1000.0f, 1000.0f; // unused
   is_directional_light = false;
   is_shadow_mapping = false;
   shadow_width =  2056;
