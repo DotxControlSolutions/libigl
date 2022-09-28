@@ -136,7 +136,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     //model = Eigen::Matrix4f::Identity();
     view = Eigen::Matrix4f::Identity();
     proj = Eigen::Matrix4f::Identity();
-    norm = Eigen::Matrix4f::Identity();
+    //norm = Eigen::Matrix4f::Identity();
 
     //std::cout << "Viewer.core().draw(), line 153" << std::endl;
 
@@ -152,7 +152,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
     float width = viewport(2);
     float height = viewport(3);
-    norm = view.inverse().transpose();
+    //norm = view.inverse().transpose();
 
     // Set projection
     if (orthographic)
@@ -188,7 +188,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   GLint modeli = glGetUniformLocation(data.meshgl.shader_mesh,"model"); // Add the model matrix
   GLint viewi  = glGetUniformLocation(data.meshgl.shader_mesh,"view");
   GLint proji  = glGetUniformLocation(data.meshgl.shader_mesh,"proj");
-  GLint normi  = glGetUniformLocation(data.meshgl.shader_mesh,"normal_matrix");
+ // GLint normi  = glGetUniformLocation(data.meshgl.shader_mesh,"normal_matrix");
 
   model = data.rotation_matrix;
 
@@ -198,7 +198,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   glUniformMatrix4fv(modeli, 1, GL_FALSE, data.rotation_matrix.data());
   glUniformMatrix4fv(viewi , 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji , 1, GL_FALSE, proj.data());
-  glUniformMatrix4fv(normi , 1, GL_FALSE, norm.data());
+  //glUniformMatrix4fv(normi , 1, GL_FALSE, norm.data());
   
   // Light parameters
   GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
