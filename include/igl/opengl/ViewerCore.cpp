@@ -204,8 +204,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
   GLint light_position_worldi = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world");
   GLint light_position_world2i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world2");
-  GLint light_position_world3i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world3");
-  GLint light_position_world4i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world4");
+  //GLint light_position_world3i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world3");
+  //GLint light_position_world4i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world4");
   //GLint light_position_eyei   = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_eye");
   GLint lighting_factori      = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
   GLint fixed_colori          = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
@@ -219,8 +219,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   glUniform3fv(light_position_worldi, 1, rev_light.data());*/
   glUniform3fv(light_position_worldi, 1, light_position.data());
   glUniform3fv(light_position_world2i, 1, light_position_2.data());
-  glUniform3fv(light_position_world3i, 1, light_position_3.data());
-  glUniform3fv(light_position_world4i, 1, light_position_4.data());
+  //glUniform3fv(light_position_world3i, 1, light_position_3.data());
+  //glUniform3fv(light_position_world4i, 1, light_position_4.data());
   glUniform1f(lighting_factori, lighting_factor); // enables lighting
   glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
   
@@ -495,8 +495,8 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   // Default lights settings
   light_position << 1000.0f, 1000.0f, 1000.0f;
   light_position_2 << -1000.0f, 1000.0f, -1000.0f;
-  light_position_3 << 0.0f, 1000.0f, 1000.0f; // unused
-  light_position_4 << 0.0f, -1000.0f, 1000.0f; // unused
+  //light_position_3 << 0.0f, 1000.0f, 1000.0f; // unused
+  //light_position_4 << 0.0f, -1000.0f, 1000.0f; // unused
   lighting_factor = 0.9f; //on
 
   // Default trackball

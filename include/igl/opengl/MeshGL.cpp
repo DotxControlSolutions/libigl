@@ -326,7 +326,6 @@ R"(#version 150
   uniform mat4 model;
   uniform mat4 view;
   uniform mat4 proj;
-  uniform mat4 normal_matrix;
   in vec3 position;
   in vec3 normal;
   out vec3 position_eye;
@@ -363,8 +362,6 @@ R"(#version 150
   //uniform vec3 light_position_eye;
   uniform vec3 light_position_world;
   uniform vec3 light_position_world2;
-  uniform vec3 light_position_world3;
-  uniform vec3 light_position_world4;
   vec3 Ls = vec3 (1, 1, 1);
   vec3 Ld = vec3 (1, 1, 1);
   vec3 La = vec3 (1, 1, 1);
@@ -381,12 +378,12 @@ R"(#version 150
   out vec4 outColor;
   void main()
   {
-    //if(matcap_factor == 1.0f)
-    //{
-    //  vec2 uv = normalize(normal_eye).xy * 0.5 + 0.5;
-    //  outColor = texture(tex, uv);
-    //}else
-    //{
+    if(matcap_factor == 1.0f)
+    {
+      vec2 uv = normalize(normal_eye).xy * 0.5 + 0.5;
+      outColor = texture(tex, uv);
+    }else
+    {
 
 
       // spotlight 1 -------------------------------------------------------------------------------------------------------
@@ -408,16 +405,9 @@ R"(#version 150
       float specular_factor = pow (dot_prod_specular, specular_exponent);
       vec3 Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
 
-      //vec4 color = vec4(lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi),(Kai.a+Ksi.a+Kdi.a)/3);
       vec4 color_1 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
 
-
-      // distance from point light to vertex is not taken into account here, when adding multiple lights this matter can be added -> attentuation
-      //float distance = length(vector_to_light_eye);
-      //float attenuation = 1.0 + 0.2 * distance + 0.1 * distance * distance;
-      //color_1 = color_1/attenuation;
-
-     // spotlight 1 -------------------------------------------------------------------------------------------------------
+     // spotlight 2 -------------------------------------------------------------------------------------------------------
       Ia = La * vec3(Kai);    // ambient intensity
         
       light_position_eye = vec3 (view * vec4 (light_position_world2, 1.0));     // light's position from world to camera space
@@ -436,73 +426,17 @@ R"(#version 150
       specular_factor = pow (dot_prod_specular, specular_exponent);
       Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
 
-      //vec4 color = vec4(lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi),(Kai.a+Ksi.a+Kdi.a)/3);
       vec4 color_2 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
 
-      // spotlight 3 -------------------------------------------------------------------------------------------------------
-             
-      //light_position_eye = vec3 (view * vec4 (light_position_world3, 1.0));     // light's position from world to camera space
-      //vector_to_light_eye = light_position_eye - position_eye;                 // in camera space, vector from camera position to vertex
-      //direction_to_light_eye = normalize (vector_to_light_eye);                // in camera space, direction from camera to light
-      //dot_prod = dot (normal_eye, direction_to_light_eye);                    // dot product from direction_cam_to_light with direction of cam
-      //float clamped_dot_prod = abs(max (dot_prod, -double_sided)); 
-      //Id = vec3 (0, 0, 0);
-      // Diffuse intensity
-      
-      //if(dot_prod > 0.0)
-      //{
-      //    Id = Ld * vec3(Kdi) * dot_prod;
-      //}
-
-      //reflection_eye = reflect (direction_to_light_eye, normal_eye);
-      //surface_to_viewer_eye = normalize (-position_eye);
-      //dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
-      
-      //dot_prod_specular = float(abs(dot_prod)==dot_prod) * abs(max (dot_prod_specular, 0.0)); // -double_sided
-      //specular_factor = pow (dot_prod_specular, specular_exponent);
-      //Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
-
-      //vec4 color = vec4(lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi),(Kai.a+Ksi.a+Kdi.a)/3);
-      //vec4 color_3 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
-
-      // spotlight 4 -------------------------------------------------------------------------------------------------------
-             
-      //light_position_eye = vec3 (view * vec4 (light_position_world4, 1.0));     // light's position from world to camera space
-      //vector_to_light_eye = light_position_eye - position_eye;                 // in camera space, vector from camera position to vertex
-      //direction_to_light_eye = normalize (vector_to_light_eye);                // in camera space, direction from camera to light
-      //dot_prod = dot (normal_eye, direction_to_light_eye);                    // dot product from direction_cam_to_light with direction of cam
-      //float clamped_dot_prod = abs(max (dot_prod, -double_sided)); 
-      //Id = vec3 (0, 0, 0);
-      // Diffuse intensity
-      
-      //if(dot_prod > 0.0)
-      //{
-      //    Id = Ld * vec3(Kdi) * dot_prod;
-      //}
-
-      //reflection_eye = reflect (direction_to_light_eye, normal_eye);
-      //surface_to_viewer_eye = normalize (-position_eye);
-      //dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
-      
-      //dot_prod_specular = float(abs(dot_prod)==dot_prod) * abs(max (dot_prod_specular, 0.0)); // -double_sided
-      //specular_factor = pow (dot_prod_specular, specular_exponent);
-      //Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
-
-      //vec4 color = vec4(lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi),(Kai.a+Ksi.a+Kdi.a)/3);
-      //vec4 color_4 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
-
-
       outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (color_1 + color_2)/1.5;
-      
+     
 
-
-
-      //if (fixed_color != vec4(0.0)) outColor = fixed_color;
+      if (fixed_color != vec4(0.0)) outColor = fixed_color;
 
       
 
 
-    //}
+    }
   }
 )";
   std::string overlay_vertex_shader_string =

@@ -139,8 +139,8 @@ public:
   // Lighting
   Eigen::Vector3f light_position;
   Eigen::Vector3f light_position_2;
-  Eigen::Vector3f light_position_3;
-  Eigen::Vector3f light_position_4;
+  //Eigen::Vector3f light_position_3;
+  //Eigen::Vector3f light_position_4;
   float lighting_factor;
 
   RotationType rotation_type;
@@ -202,8 +202,8 @@ namespace igl {
 
       SERIALIZE_MEMBER(light_position);
       SERIALIZE_MEMBER(light_position_2);
-      SERIALIZE_MEMBER(light_position_3);
-      SERIALIZE_MEMBER(light_position_4);
+      //SERIALIZE_MEMBER(light_position_3);
+      //SERIALIZE_MEMBER(light_position_4);
       SERIALIZE_MEMBER(lighting_factor);
 
       SERIALIZE_MEMBER(trackball_angle);
@@ -237,7 +237,7 @@ namespace igl {
       SERIALIZE_MEMBER(view);
       //SERIALIZE_MEMBER(model);
       SERIALIZE_MEMBER(proj);
-      SERIALIZE_MEMBER(norm);
+      //SERIALIZE_MEMBER(norm);
     }
 
     template<>
