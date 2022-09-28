@@ -326,7 +326,7 @@ R"(#version 150
   uniform mat4 model;
   uniform mat4 view;
   uniform mat4 proj;
-  
+  uniform mat4 normal_matrix;
   in vec3 position;
   in vec3 normal;
   out vec3 position_eye;
@@ -355,7 +355,6 @@ R"(#version 150
       {
         position_shadow = shadow_proj * shadow_view * model * vec4(position, 1.0);
       }
-      // Custom: use view * model instead of normal_matrix
       normal_eye = vec3 (view * model * vec4 (normal, 0.0));
       normal_eye = normalize(normal_eye);
       Kai = Ka;
@@ -365,7 +364,7 @@ R"(#version 150
     }
     gl_Position = proj * vec4 (position_eye, 1.0);
   }
-)"; 
+)";
   std::string mesh_fragment_shader_string =
 R"(#version 150
   uniform mat4 model;
@@ -377,8 +376,11 @@ R"(#version 150
   uniform bool is_directional_light;
   uniform bool is_shadow_mapping;
   uniform bool shadow_pass;
-  // Custom: use world-space light position for 2-point lighting
+  // Custom: 4 light positions for multi-point lighting
   uniform vec3 light_position_world;
+  uniform vec3 light_position_world2;
+  uniform vec3 light_position_world3;
+  uniform vec3 light_position_world4;
   vec3 Ls = vec3 (1, 1, 1);
   vec3 Ld = vec3 (1, 1, 1);
   vec3 La = vec3 (1, 1, 1);
@@ -401,67 +403,48 @@ R"(#version 150
   {
     if(shadow_pass)
     {
-      // Would it be better to have a separate no-op frag shader?
       outColor = vec4(0.56,0.85,0.77,1.);
       return;
     }
-    // Custom: compute light position in eye space from world space
+    // Custom: 2-point lighting system
+    // Light 1
+    vec3 Ia = La * vec3(Kai);    // ambient intensity
     vec3 light_position_eye = vec3 (view * vec4 (light_position_world, 1.0));
-    // If is_directional_light then assume normalized
-    vec3 direction_to_light_eye = light_position_eye;
-    if(! is_directional_light)
-    {
-      vec3 vector_to_light_eye = light_position_eye - position_eye;
-      direction_to_light_eye = normalize(vector_to_light_eye);
-    }
-    float shadow = 1.0;
-    if(is_shadow_mapping)
-    {
-      vec3 shadow_pos = (position_shadow.xyz / position_shadow.w) * 0.5 + 0.5; 
-      float currentDepth = shadow_pos.z;
-      //float bias = 0.005;
-      float ddd = max(dot(normalize(normal_eye), direction_to_light_eye),0);
-      float bias = max(0.02 * (1.0 - ddd), 0.005);  
-      // 5-point stencil
-      if(shadow_pos.z < 1.0)
-      {
-        float closestDepth = texture( shadow_tex , shadow_pos.xy).r;
-        shadow = currentDepth - bias >= closestDepth ? 0.0 : 1.0;  
-        vec2 texelSize = 1.0 / textureSize(shadow_tex, 0);
-        for(int x = -1; x <= 1; x+=2)
-        {
-          for(int y = -1; y <= 1; y+=2)
-          {
-            float pcfDepth = texture(shadow_tex,  shadow_pos.xy + vec2(x, y) * texelSize).r; 
-            shadow += currentDepth - bias >= pcfDepth ? 0.0 : 1.0;        
-          }    
-        }
-        shadow /= 5.0;
-      }
-    }
-
-    if(matcap_factor == 1.0f)
-    {
-      vec2 uv = normalize(normal_eye).xy * 0.5 + 0.5;
-      outColor = mix(Kai,texture(tex, uv),shadow);
-    }else
-    {
-      vec3 Ia = La * vec3(Kai);    // ambient intensity
-
-      float dot_prod = dot (direction_to_light_eye, normalize(normal_eye));
-      float clamped_dot_prod = abs(max (dot_prod, -double_sided));
-      vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;    // Diffuse intensity
+    vec3 vector_to_light_eye = light_position_eye - position_eye;
+    vec3 direction_to_light_eye = normalize (-vector_to_light_eye);
+    float dot_prod = dot (direction_to_light_eye, normal_eye);
+    float clamped_dot_prod = max (dot_prod, 0.0);
+    vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;
 
       vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye);
       vec3 surface_to_viewer_eye = normalize (-position_eye);
       float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
-      dot_prod_specular = float(abs(dot_prod)==dot_prod) * abs(max (dot_prod_specular, -double_sided));
+      
+      dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);
       float specular_factor = pow (dot_prod_specular, specular_exponent);
       vec3 Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
-      vec4 color = vec4(Ia + shadow*(lighting_factor * (Is + Id) + (1.0-lighting_factor) * vec3(Kdi)),(Kai.a+Ksi.a+Kdi.a)/3);
-      outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * color;
+      vec4 color_1 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
+
+      // Light 2
+      Ia = La * vec3(Kai);
+      light_position_eye = vec3 (view * vec4 (light_position_world2, 1.0));
+      vector_to_light_eye = light_position_eye - position_eye;
+      direction_to_light_eye = normalize (-vector_to_light_eye);
+      dot_prod = dot (direction_to_light_eye, normal_eye);
+      clamped_dot_prod = max (dot_prod, 0.0);
+      Id = Ld * vec3(Kdi) * clamped_dot_prod;
+
+      reflection_eye = reflect (-direction_to_light_eye, normal_eye);
+      surface_to_viewer_eye = normalize (-position_eye);
+      dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
+      dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);
+      specular_factor = pow (dot_prod_specular, specular_exponent);
+      Is = Ls * vec3(Ksi) * specular_factor;
+      vec4 color_2 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
+
+      // Combine lights
+      outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (color_1 + color_2)/1.5;
       if (fixed_color != vec4(0.0)) outColor = fixed_color;
-    }
   }
 )";
   std::string overlay_vertex_shader_string =
