@@ -408,7 +408,8 @@ R"(#version 150
     vec3 Ia = La * vec3(Kai);
     vec3 light_position_eye = vec3 (view * vec4 (light_position_world, 1.0));
     vec3 vector_to_light_eye = light_position_eye - position_eye;
-    vec3 direction_to_light_eye = normalize (-vector_to_light_eye);
+    // Fixed: positive direction for light from above
+    vec3 direction_to_light_eye = normalize (vector_to_light_eye);
     float dot_prod = dot (direction_to_light_eye, normal_eye);
     float clamped_dot_prod = max (dot_prod, 0.0);
     vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;
@@ -425,7 +426,8 @@ R"(#version 150
     Ia = La * vec3(Kai);
     light_position_eye = vec3 (view * vec4 (light_position_world2, 1.0));
     vector_to_light_eye = light_position_eye - position_eye;
-    direction_to_light_eye = normalize (-vector_to_light_eye);
+    // Fixed: positive direction for light from above
+    direction_to_light_eye = normalize (vector_to_light_eye);
     dot_prod = dot (direction_to_light_eye, normal_eye);
     clamped_dot_prod = max (dot_prod, 0.0);
     Id = Ld * vec3(Kdi) * clamped_dot_prod;
