@@ -391,7 +391,7 @@ R"(#version 150
         
       vec3 light_position_eye = vec3 (view * vec4 (light_position_world, 1.0));     // light's position from world to camera space
       vec3 vector_to_light_eye = light_position_eye - position_eye;                 // in camera space, vector from camera position to vertex
-      vec3 direction_to_light_eye = normalize (-vector_to_light_eye);                // in camera space, direction from camera to light
+      vec3 direction_to_light_eye = normalize (vector_to_light_eye);                // in camera space, direction from camera to light
       float dot_prod = dot (direction_to_light_eye, normal_eye);
       float clamped_dot_prod = max (dot_prod, 0.0);
       vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;
@@ -412,7 +412,7 @@ R"(#version 150
         
       light_position_eye = vec3 (view * vec4 (light_position_world2, 1.0));     // light's position from world to camera space
       vector_to_light_eye = light_position_eye - position_eye;                 // in camera space, vector from camera position to vertex
-      direction_to_light_eye = normalize (-vector_to_light_eye);                // in camera space, direction from camera to light
+      direction_to_light_eye = normalize (vector_to_light_eye);                // in camera space, direction from camera to light
       dot_prod = dot (direction_to_light_eye, normal_eye);
       clamped_dot_prod = max (dot_prod, 0.0);
       Id = Ld * vec3(Kdi) * clamped_dot_prod;
