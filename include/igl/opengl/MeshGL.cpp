@@ -408,7 +408,6 @@ R"(#version 150
     vec3 Ia = La * vec3(Kai);
     vec3 light_position_eye = vec3 (view * vec4 (light_position_world, 1.0));
     vec3 vector_to_light_eye = light_position_eye - position_eye;
-    // Fixed: positive direction for light from above
     vec3 direction_to_light_eye = normalize (vector_to_light_eye);
     float dot_prod = dot (direction_to_light_eye, normal_eye);
     float clamped_dot_prod = max (dot_prod, 0.0);

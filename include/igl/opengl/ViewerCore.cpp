@@ -109,6 +109,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   ViewerData& data,
   bool update_matrices)
 {
+  
   using namespace std;
   using namespace Eigen;
   if (depth_test)
@@ -572,10 +573,10 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
 
   // Custom: multi-point lighting system positions
   light_position << 1000.0f, 1000.0f, 1000.0f;
-  light_position_2 << -1000.0f, 1000.0f, -1000.0f;
+  light_position_2 << -1000.0f, -1000.0f, -1000.0f;  // Mirrored w.r.t. origin
   is_directional_light = false;
   is_shadow_mapping = false;
-  shadow_width =  2056;
+  shadow_width = 2056;
   shadow_height = 2056;
 
   lighting_factor = 0.9f; //on

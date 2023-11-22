@@ -270,6 +270,7 @@ public:
   bool is_init = false;
   unsigned int step;
   bool only_bind = false;
+  // Why is this done like this?? Just create a new mesh, this has nothing to do with the original mesh and only messes everything up!!!
   Eigen::MatrixXf V_add; 
   Eigen::MatrixXi F_add;
 
