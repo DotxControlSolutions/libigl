@@ -393,7 +393,7 @@ R"(#version 150
       vec3 vector_to_light_eye = light_position_eye - position_eye;                 // in camera space, vector from camera position to vertex
       vec3 direction_to_light_eye = normalize (vector_to_light_eye);                // in camera space, direction from camera to light
       float dot_prod = dot (direction_to_light_eye, normal_eye);
-      float clamped_dot_prod = max (dot_prod, 0.0);
+      float clamped_dot_prod = max (dot_prod, 0.0); // -double_sided
       vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;
 
 
@@ -428,7 +428,7 @@ R"(#version 150
 
       vec4 color_2 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
 
-      outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (color_1 + color_2)/1.5;
+      outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (color_1 + color_2)/1.2;
      
 
       if (fixed_color != vec4(0.0)) outColor = fixed_color;

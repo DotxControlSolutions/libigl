@@ -106,6 +106,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   ViewerData& data,
   bool update_matrices)
 {
+  
   using namespace std;
   using namespace Eigen;
   if (depth_test)
@@ -494,7 +495,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
 
   // Default lights settings
   light_position << 1000.0f, 1000.0f, 1000.0f;
-  light_position_2 << -1000.0f, 1000.0f, -1000.0f;
+  light_position_2 << -1000.0f, -1000.0f, -1000.0f;
   //light_position_3 << 0.0f, 1000.0f, 1000.0f; // unused
   //light_position_4 << 0.0f, -1000.0f, 1000.0f; // unused
   lighting_factor = 0.9f; //on
