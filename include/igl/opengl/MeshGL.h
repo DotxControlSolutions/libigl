@@ -136,12 +136,8 @@ public:
   std::uint32_t dirty;
 
   // marks print data
-  bool is_print = false;
-  bool is_simulation = false;
-  unsigned int step = 0;
-  unsigned int n_element_in_one_F;
-  unsigned int first_printing_step;
-  int dev_in_F = 0;
+  int step = -1;
+  int number_triangles_per_step = 20 + 16;
 
 
   IGL_INLINE MeshGL();
