@@ -120,9 +120,7 @@ public:
   uint32_t dirty;
 
   // marks print data
-  int step = -1;
-  int number_triangles_per_step = 20 + 16;
-
+  int number_of_triangles = -1;
 
   IGL_INLINE MeshGL();
 

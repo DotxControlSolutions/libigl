@@ -279,11 +279,11 @@ IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0, 1.0);
   }
-  if (step == -1) {
+  if (number_of_triangles == -1) {
       glDrawElements(GL_TRIANGLES, 3 * F_vbo.rows(), GL_UNSIGNED_INT, 0);
   }
-  else if (step >= 0) {
-      glDrawElements(GL_TRIANGLES, 3 * number_triangles_per_step * step, GL_UNSIGNED_INT, 0);
+  else if (number_of_triangles >= 0) {
+      glDrawElements(GL_TRIANGLES, 3 * number_of_triangles, GL_UNSIGNED_INT, 0);
   }
 
   glDisable(GL_POLYGON_OFFSET_FILL);

@@ -243,6 +243,15 @@ namespace glfw
         // In microseconds
         double duration = 1000000.*(get_seconds()-tic);
         const double min_duration = 1000000./core().animation_max_fps;
+        // update average FPS
+        double N = 19;
+        if (duration < min_duration) {
+            this->mean_time_between_frames = (N * this->mean_time_between_frames + min_duration) / (N + 1);
+        }
+        else {
+            this->mean_time_between_frames = (N * this->mean_time_between_frames + duration) / (N + 1);
+        }
+        
         if(duration<min_duration)
         {
           std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
