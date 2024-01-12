@@ -251,7 +251,9 @@ public:
     void* callback_key_up_data;
 
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
+    double mean_time_between_frames = 1000000 / 60;
   };
 
 } // end namespace
