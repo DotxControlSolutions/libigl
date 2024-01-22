@@ -264,7 +264,7 @@ namespace glfw
       }
       else
       {
-        glfwWaitEvents();
+        glfwWaitEventsTimeout(2);
         frame_counter = 0;
       }
       if (!loop)
