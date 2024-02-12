@@ -539,7 +539,7 @@ R"(#version 330
     }
 )";
   init_buffers();
-  init_text_rendering();
+  //init_text_rendering();
   create_shader_program(
     mesh_vertex_shader_string,
     mesh_fragment_shader_string,

@@ -77,6 +77,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_mesh(
     V = V_temp;
     F = _F;
 
+    // The code below makes Matlab slow.
     compute_normals();
     uniform_colors(
       Eigen::Vector3d(GOLD_AMBIENT[0], GOLD_AMBIENT[1], GOLD_AMBIENT[2]),
@@ -879,7 +880,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
     }
   }
   //std::cout << "Line 857" << std::endl;
-  if (meshgl.dirty & MeshGL::DIRTY_FACE_LABELS)
+  if ( 0 & meshgl.dirty & MeshGL::DIRTY_FACE_LABELS) //JK 2024-02-09: Turned this off - we dont need labels
   {
     if(face_labels_positions.rows()==0)
     {
@@ -913,7 +914,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
     );
   }
   //std::cout << "Line 882" << std::endl;
-  if (meshgl.dirty & MeshGL::DIRTY_VERTEX_LABELS)
+  if ( 0 & meshgl.dirty & MeshGL::DIRTY_VERTEX_LABELS) //JK 2024-02-09: Turned this off - we dont need labels
   {
     if(vertex_labels_positions.rows()==0)
     {
@@ -933,7 +934,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
     );
   }
 
-  if (meshgl.dirty & MeshGL::DIRTY_CUSTOM_LABELS)
+  if (0 & meshgl.dirty & MeshGL::DIRTY_CUSTOM_LABELS) //JK 2024-02-09: Turned this off - we dont need labels
   {
     update_labels(
       meshgl.custom_labels,
