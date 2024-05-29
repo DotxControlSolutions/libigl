@@ -351,6 +351,9 @@ R"(#version 150
   in vec3 position_eye;
   in vec3 normal_eye;
   //uniform vec3 light_position_eye;
+  uniform vec3 key_light;
+  uniform vec3 fill_light;
+  uniform vec3 back_light;
   uniform vec3 light_position_world;
   uniform vec3 light_position_world2;
   vec3 Ls = vec3 (1, 1, 1);
@@ -396,7 +399,7 @@ R"(#version 150
       float specular_factor = pow (dot_prod_specular, specular_exponent);
       vec3 Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
 
-      vec4 color_1 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
+      vec4 color_1 = vec4( 0.3 * (0*Is + Id) + 1*Ia + (1.0-0.3) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
 
      // spotlight 2 -------------------------------------------------------------------------------------------------------
       Ia = La * vec3(Kai);    // ambient intensity
@@ -417,9 +420,73 @@ R"(#version 150
       specular_factor = pow (dot_prod_specular, specular_exponent);
       Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
 
-      vec4 color_2 = vec4( lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
+      vec4 color_2 = vec4( 0.0 * (Is + Id) + Ia/3 + (1.0-1.0) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3);
+      
+      // keylight - camera ---------------------------------------------------------------------------------------------
+      Ia = La * vec3(Kai);    // ambient intensity
+        
+      light_position_eye = vec3 (view * vec4 (key_light, 1.0));     // light's position from world to camera space
+      vector_to_light_eye = light_position_eye - position_eye;                 // in camera space, vector from camera position to vertex
+      direction_to_light_eye = normalize (vector_to_light_eye);                // in camera space, direction from camera to light
+      dot_prod = dot (direction_to_light_eye, normal_eye);
+      clamped_dot_prod = max (dot_prod, 0.0);
+      Id = Ld * vec3(Kdi) * clamped_dot_prod;
 
-      outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (color_1 + color_2)/1.2;
+
+      reflection_eye = reflect (-direction_to_light_eye, normal_eye);
+      surface_to_viewer_eye = normalize (-position_eye);
+      dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
+      
+      dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0); // -double_sided
+      specular_factor = pow (dot_prod_specular, specular_exponent);
+      Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
+
+      vec4 color_3 = vec4( 1.0 * (0*Is + Id) + 0*Ia + (1.0-0.9) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3); // lighting_factor set to 0.5 here
+
+      // filllight - camera ---------------------------------------------------------------------------------------------
+      Ia = La * vec3(Kai);    // ambient intensity
+        
+      light_position_eye = vec3 (view * vec4 (fill_light, 1.0));     // light's position from world to camera space
+      vector_to_light_eye = light_position_eye - position_eye;                 // in camera space, vector from camera position to vertex
+      direction_to_light_eye = normalize (vector_to_light_eye);                // in camera space, direction from camera to light
+      dot_prod = dot (direction_to_light_eye, normal_eye);
+      clamped_dot_prod = max (dot_prod, 0.0);
+      Id = Ld * vec3(Kdi) * clamped_dot_prod;
+
+
+      reflection_eye = reflect (-direction_to_light_eye, normal_eye);
+      surface_to_viewer_eye = normalize (-position_eye);
+      dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
+      
+      dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0); // -double_sided
+      specular_factor = pow (dot_prod_specular, specular_exponent);
+      Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
+
+      vec4 color_4 = vec4( 1.0 * (0*Is + Id) + 0*Ia + (1.0-0.9) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3); // lighting_factor set to 0.5 here
+
+      // backlight - camera ---------------------------------------------------------------------------------------------
+      Ia = La * vec3(Kai);    // ambient intensity
+        
+      light_position_eye = vec3 (view * vec4 (back_light, 1.0));     // light's position from world to camera space
+      vector_to_light_eye = light_position_eye - position_eye;                 // in camera space, vector from camera position to vertex
+      direction_to_light_eye = normalize (vector_to_light_eye);                // in camera space, direction from camera to light
+      dot_prod = dot (direction_to_light_eye, normal_eye);
+      clamped_dot_prod = max (dot_prod, 0.0);
+      Id = Ld * vec3(Kdi) * clamped_dot_prod;
+
+
+      reflection_eye = reflect (-direction_to_light_eye, normal_eye);
+      surface_to_viewer_eye = normalize (-position_eye);
+      dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
+      
+      dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0); // -double_sided
+      specular_factor = pow (dot_prod_specular, specular_exponent);
+      Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
+
+      vec4 color_5 = vec4( 1.0 * (0*Is + Id) + 0*Ia + (1.0-0.9) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3); // lighting_factor set to 0.5 here
+
+
+      outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (0.50*color_3 + 0.25*color_4 + 0.25*color_5)/1.0; // for 2 lights: 1.2
      
 
       if (fixed_color != vec4(0.0)) outColor = fixed_color;

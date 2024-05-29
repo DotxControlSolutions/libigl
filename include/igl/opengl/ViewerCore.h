@@ -137,6 +137,7 @@ public:
   Eigen::Vector4f background_color;
 
   // Lighting
+  Eigen::Vector3f light_position_camera;
   Eigen::Vector3f light_position;
   Eigen::Vector3f light_position_2;
   //Eigen::Vector3f light_position_3;
@@ -162,6 +163,8 @@ public:
   Eigen::Vector3f camera_translation;
   Eigen::Vector3f camera_eye;
   Eigen::Vector3f camera_up;
+  Eigen::Vector3f camera_dir;
+  Eigen::Vector3f camera_side;
   Eigen::Vector3f camera_center;
   float camera_view_angle;
   float camera_dnear;

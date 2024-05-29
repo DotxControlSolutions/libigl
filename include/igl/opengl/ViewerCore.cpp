@@ -146,6 +146,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     view = view
       * (trackball_angle * Eigen::Scaling(camera_zoom * camera_base_zoom)
       * Eigen::Translation3f(camera_translation + camera_base_translation)).matrix();
+    //cout << "camera_center: " << camera_center << endl;
+    //cout << "camera_eye: " << camera_eye << endl;
     //cout << "camera_zoom: " << camera_zoom << endl;
     //cout << "camera_base_zoom: " << camera_base_zoom << endl;
     //cout << "camera translation: " << camera_translation << endl; // <- this one should move when the right mouse button is used
@@ -195,6 +197,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
   //cout << "view: " << view << endl;
   //cout << "model: " << model << endl;
+  //cout << "proj: " << proj << endl;
 
   glUniformMatrix4fv(modeli, 1, GL_FALSE, data.rotation_matrix.data());
   glUniformMatrix4fv(viewi , 1, GL_FALSE, view.data());
@@ -203,6 +206,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   
   // Light parameters
   GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
+  GLint key_light_i = glGetUniformLocation(data.meshgl.shader_mesh, "key_light");
+  GLint fill_light_i = glGetUniformLocation(data.meshgl.shader_mesh, "fill_light");
+  GLint back_light_i = glGetUniformLocation(data.meshgl.shader_mesh, "back_light");
   GLint light_position_worldi = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world");
   GLint light_position_world2i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world2");
   //GLint light_position_world3i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world3");
@@ -214,10 +220,47 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   GLint matcap_factori        = glGetUniformLocation(data.meshgl.shader_mesh,"matcap_factor");
   GLint double_sidedi         = glGetUniformLocation(data.meshgl.shader_mesh,"double_sided");
 
+  // compute camera position in world-space
+  Eigen::Matrix<float, 4, 1> camera_pos_4;
+  camera_pos_4 << camera_eye, 1.0f;
+  Eigen::Vector3f camera_pos_ws = (view.inverse() * camera_pos_4).cast<float>().head(3);
+
+  float distance_cam_to_center = (camera_eye - camera_center).norm();
+
+  // compute camera reference frame in world space - up
+  Eigen::Matrix<float, 4, 1> camera_up_4;
+  camera_up_4 << camera_up, 0.0f;
+  Eigen::Vector3f camera_up_ws = (view.inverse() * camera_up_4).cast<float>().head(3);
+  camera_up_ws.normalize();
+
+  // compute camera reference frame in world space - dir
+  Eigen::Matrix<float, 4, 1> camera_dir_4;
+  camera_dir_4 << camera_dir, 0.0f;
+  Eigen::Vector3f camera_dir_ws = (view.inverse() * camera_dir_4).cast<float>().head(3);
+  camera_dir_ws.normalize();
+
+  // compute camera reference frame in world space - side
+  Eigen::Matrix<float, 4, 1> camera_side_4;
+  camera_side_4 << camera_side, 0.0f;
+  Eigen::Vector3f camera_side_ws = (view.inverse() * camera_side_4).cast<float>().head(3);
+  camera_side_ws.normalize();
+
+  // direction camera to back light
+  Eigen::Vector3f dir_cam_to_back_light;
+  dir_cam_to_back_light = 1*camera_side_ws + 2*camera_dir_ws + 2*camera_up_ws;
+  dir_cam_to_back_light.normalize();
+
+  Eigen::Vector3f key_light = camera_pos_ws + 0.5 * distance_cam_to_center * camera_side_ws;
+  Eigen::Vector3f fill_light = camera_pos_ws - 1.5 * distance_cam_to_center * camera_side_ws;
+  Eigen::Vector3f back_light = camera_pos_ws + 3 * distance_cam_to_center * dir_cam_to_back_light;
+
   glUniform1f(specular_exponenti, data.shininess);
   /*glUniform3fv(light_position_eyei, 1, light_position.data());
   Vector3f rev_light = -1. * light_position;
   glUniform3fv(light_position_worldi, 1, rev_light.data());*/
+  glUniform3fv(key_light_i, 1, key_light.data());
+  glUniform3fv(fill_light_i, 1, fill_light.data());
+  glUniform3fv(back_light_i, 1, back_light.data());
   glUniform3fv(light_position_worldi, 1, light_position.data());
   glUniform3fv(light_position_world2i, 1, light_position_2.data());
   //glUniform3fv(light_position_world3i, 1, light_position_3.data());
@@ -494,11 +537,13 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   background_color << 0.93f, 0.95f, 0.97f, 1.0f;
 
   // Default lights settings
-  light_position << 1000.0f, 1000.0f, 1000.0f;
-  light_position_2 << -1000.0f, -1000.0f, -1000.0f;
+  light_position_camera << 0.0f, 0.0f, 5.0f;
+  //light_position << 10000.0f, 10000.0f, 10000.0f;
+  light_position << 0.0f, 10000.0f, 0.0f;
+  light_position_2 << -10000.0f, -10000.0f, -10000.0f;
   //light_position_3 << 0.0f, 1000.0f, 1000.0f; // unused
   //light_position_4 << 0.0f, -1000.0f, 1000.0f; // unused
-  lighting_factor = 0.9f; //on
+  lighting_factor = 0.75f; //on
 
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
@@ -521,7 +566,10 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   camera_translation << 0, 0, 0;
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
+  // camera reference frame
   camera_up << 0, 1, 0;
+  camera_dir << 0, 0, -1;
+  camera_side << -1, 0, 0;
 
   depth_test = true;
 
