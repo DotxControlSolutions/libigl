@@ -366,7 +366,7 @@ R"(#version 150
   uniform bool is_directional_light;
   uniform bool is_shadow_mapping;
   uniform bool shadow_pass;
-  // Custom: 4 light positions for multi-point lighting
+  // Custom: 2 light positions for multi-point lighting
   uniform vec3 light_position_world;
   uniform vec3 light_position_world2;
   vec3 Ls = vec3 (1, 1, 1);

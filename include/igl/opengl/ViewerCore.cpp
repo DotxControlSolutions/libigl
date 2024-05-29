@@ -146,6 +146,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     view = view
       * (trackball_angle * Eigen::Scaling(camera_zoom * camera_base_zoom)
       * Eigen::Translation3f(camera_translation + camera_base_translation)).matrix();
+    //cout << "camera_center: " << camera_center << endl;
+    //cout << "camera_eye: " << camera_eye << endl;
     //cout << "camera_zoom: " << camera_zoom << endl;
     //cout << "camera_base_zoom: " << camera_base_zoom << endl;
     //cout << "camera translation: " << camera_translation << endl; // <- this one should move when the right mouse button is used
@@ -195,6 +197,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
   //cout << "view: " << view << endl;
   //cout << "model: " << model << endl;
+  //cout << "proj: " << proj << endl;
 
   glUniformMatrix4fv(modeli, 1, GL_FALSE, data.rotation_matrix.data());
   glUniformMatrix4fv(viewi , 1, GL_FALSE, view.data());
@@ -203,6 +206,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   
   // Light parameters
   GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
+  GLint key_light_i = glGetUniformLocation(data.meshgl.shader_mesh, "key_light");
+  GLint fill_light_i = glGetUniformLocation(data.meshgl.shader_mesh, "fill_light");
+  GLint back_light_i = glGetUniformLocation(data.meshgl.shader_mesh, "back_light");
   GLint light_position_worldi = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world");
   GLint light_position_world2i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world2");
   //GLint light_position_world3i = glGetUniformLocation(data.meshgl.shader_mesh, "light_position_world3");
@@ -602,7 +608,10 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   camera_translation << 0, 0, 0;
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
+  // camera reference frame
   camera_up << 0, 1, 0;
+  camera_dir << 0, 0, -1;
+  camera_side << -1, 0, 0;
 
   depth_test = true;
 
