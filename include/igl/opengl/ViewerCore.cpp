@@ -225,7 +225,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   camera_pos_4 << camera_eye, 1.0f;
   Eigen::Vector3f camera_pos_ws = (view.inverse() * camera_pos_4).cast<float>().head(3);
 
-  float distance_cam_to_center = (camera_eye - camera_center).norm();
+  float distance_cam_to_center = (camera_pos_ws - camera_center).norm();
 
   // compute camera reference frame in world space - up
   Eigen::Matrix<float, 4, 1> camera_up_4;
@@ -247,12 +247,18 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
   // direction camera to back light
   Eigen::Vector3f dir_cam_to_back_light;
-  dir_cam_to_back_light = 1*camera_side_ws + 2*camera_dir_ws + 2*camera_up_ws;
+  dir_cam_to_back_light = -1*camera_side_ws + 2*camera_dir_ws + 2*camera_up_ws;
   dir_cam_to_back_light.normalize();
 
   Eigen::Vector3f key_light = camera_pos_ws + 0.5 * distance_cam_to_center * camera_side_ws;
-  Eigen::Vector3f fill_light = camera_pos_ws - 1.5 * distance_cam_to_center * camera_side_ws;
+  Eigen::Vector3f fill_light = camera_pos_ws - 1.0 * distance_cam_to_center * camera_side_ws;
   Eigen::Vector3f back_light = camera_pos_ws + 3 * distance_cam_to_center * dir_cam_to_back_light;
+
+  //cout << "camera_pos_ws: " << camera_pos_ws << endl;
+  //cout << "distance_cam_to_center: " << distance_cam_to_center << endl;
+  //cout << "key_light: " << key_light << endl;
+  //cout << "fill_light: " << fill_light << endl;
+  //cout << "back_light: " << back_light << endl;
 
   glUniform1f(specular_exponenti, data.shininess);
   /*glUniform3fv(light_position_eyei, 1, light_position.data());

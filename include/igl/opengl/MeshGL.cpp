@@ -441,7 +441,7 @@ R"(#version 150
       specular_factor = pow (dot_prod_specular, specular_exponent);
       Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
 
-      vec4 color_3 = vec4( 1.0 * (0*Is + Id) + 0*Ia + (1.0-0.9) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3); // lighting_factor set to 0.5 here
+      vec4 color_3 = vec4( 1.0 * (0*Is + Id) + 0*Ia + 1*(1.0-0.9) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3); // lighting_factor set to 0.5 here
 
       // filllight - camera ---------------------------------------------------------------------------------------------
       Ia = La * vec3(Kai);    // ambient intensity
@@ -462,7 +462,7 @@ R"(#version 150
       specular_factor = pow (dot_prod_specular, specular_exponent);
       Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
 
-      vec4 color_4 = vec4( 1.0 * (0*Is + Id) + 0*Ia + (1.0-0.9) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3); // lighting_factor set to 0.5 here
+      vec4 color_4 = vec4( 1.0 * (0*Is + Id) + 0*Ia + 1*(1.0-0.9) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3); // lighting_factor set to 0.5 here
 
       // backlight - camera ---------------------------------------------------------------------------------------------
       Ia = La * vec3(Kai);    // ambient intensity
@@ -483,10 +483,10 @@ R"(#version 150
       specular_factor = pow (dot_prod_specular, specular_exponent);
       Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
 
-      vec4 color_5 = vec4( 1.0 * (0*Is + Id) + 0*Ia + (1.0-0.9) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3); // lighting_factor set to 0.5 here
+      vec4 color_5 = vec4( 1.0 * (0*Is + Id) + 0*Ia + 1*(1.0-0.9) * vec3(Kdi), (Kai.a+Ksi.a+Kdi.a)/3); // lighting_factor set to 0.5 here
 
-
-      outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (0.50*color_3 + 0.25*color_4 + 0.25*color_5)/1.0; // for 2 lights: 1.2
+ 
+      outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * (0.50*color_3 + 0.25*color_4 + 0.25*color_5)*1.5; // 
      
 
       if (fixed_color != vec4(0.0)) outColor = fixed_color;
