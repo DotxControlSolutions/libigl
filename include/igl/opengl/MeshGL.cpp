@@ -292,7 +292,12 @@ IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
 
 IGL_INLINE void igl::opengl::MeshGL::draw_overlay_lines()
 {
-  glDrawElements(GL_LINES, lines_F_vbo.rows(), GL_UNSIGNED_INT, 0);
+    if (number_of_lines == -1) {
+        glDrawElements(GL_LINES, lines_F_vbo.rows(), GL_UNSIGNED_INT, 0);
+    }
+    else {
+        glDrawElements(GL_LINES, number_of_lines, GL_UNSIGNED_INT, 0);
+    }
 }
 
 IGL_INLINE void igl::opengl::MeshGL::draw_overlay_points()

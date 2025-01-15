@@ -137,6 +137,7 @@ public:
 
   // marks print data
   int number_of_triangles = -1;
+  int number_of_lines = -1;
 
   IGL_INLINE MeshGL();
 
