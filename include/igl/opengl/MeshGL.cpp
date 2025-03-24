@@ -279,11 +279,11 @@ IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0, 1.0);
   }
-  if (number_of_triangles == -1) {
+  if (number_of_faces_to_plot == -1) {
       glDrawElements(GL_TRIANGLES, 3 * F_vbo.rows(), GL_UNSIGNED_INT, 0);
   }
-  else if (number_of_triangles >= 0) {
-      glDrawElements(GL_TRIANGLES, 3 * number_of_triangles, GL_UNSIGNED_INT, 0);
+  else if (number_of_faces_to_plot >= 0) {
+      glDrawElements(GL_TRIANGLES, 3 * number_of_faces_to_plot, GL_UNSIGNED_INT, 0);
   }
 
   glDisable(GL_POLYGON_OFFSET_FILL);
@@ -292,11 +292,11 @@ IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
 
 IGL_INLINE void igl::opengl::MeshGL::draw_overlay_lines()
 {
-    if (number_of_lines == -1) {
+    if (number_of_lines_to_plot == -1) {
         glDrawElements(GL_LINES, lines_F_vbo.rows(), GL_UNSIGNED_INT, 0);
     }
     else {
-        glDrawElements(GL_LINES, number_of_lines, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINES, number_of_lines_to_plot, GL_UNSIGNED_INT, 0);
     }
 }
 
