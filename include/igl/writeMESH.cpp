@@ -104,10 +104,10 @@ IGL_INLINE bool igl::writeMESH(
   // print faces
   fprintf(mesh_file,"Triangles\n");
   // print number of triangles
-  int number_of_triangles = F.rows();
-  fprintf(mesh_file,"%d\n",number_of_triangles);
+  int number_of_faces_to_plot = F.rows();
+  fprintf(mesh_file,"%d\n",number_of_faces_to_plot);
   // loop over faces
-  for(int i = 0;i<number_of_triangles;i++)
+  for(int i = 0;i<number_of_faces_to_plot;i++)
   {
     // loop over vertices in face
     fprintf(mesh_file,"%d %d %d 1\n", 

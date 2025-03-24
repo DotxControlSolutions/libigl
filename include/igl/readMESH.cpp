@@ -140,18 +140,18 @@ IGL_INLINE bool igl::readMESH(
       }
     }else if(0==strcmp(str,"Triangles"))
     {
-      int number_of_triangles;
-      if(1 != fscanf(mesh_file," %d",&number_of_triangles))
+      int number_of_faces_to_plot;
+      if(1 != fscanf(mesh_file," %d",&number_of_faces_to_plot))
       {
         fprintf(stderr,"Error: expecting number of triangles...\n");
         fclose(mesh_file);
         return false;
       }
       // allocate space for triangles
-      F.resize(number_of_triangles,3);
+      F.resize(number_of_faces_to_plot,3);
       // triangle indices
       int tri[3];
-      for(int i = 0;i<number_of_triangles;i++)
+      for(int i = 0;i<number_of_faces_to_plot;i++)
       {
         if(4 != fscanf(mesh_file," %d %d %d %d",&tri[0],&tri[1],&tri[2],&extra))
         {

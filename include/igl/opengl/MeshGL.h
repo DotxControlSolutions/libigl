@@ -136,8 +136,8 @@ public:
   std::uint32_t dirty;
 
   // marks print data
-  int number_of_triangles = -1;
-  int number_of_lines = -1;
+  int number_of_faces_to_plot = -1;
+  int number_of_lines_to_plot = -1;
 
   IGL_INLINE MeshGL();
 
