@@ -608,10 +608,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   camera_translation << 0, 0, 0;
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
-  // camera reference frame
   camera_up << 0, 1, 0;
-  camera_dir << 0, 0, -1;
-  camera_side << -1, 0, 0;
 
   depth_test = true;
 
